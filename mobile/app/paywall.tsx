@@ -1,9 +1,26 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Purchases from 'react-native-purchases';
+import { router } from 'expo-router';
 
 export default function Paywall() {
   const [loading, setLoading] = useState(false);
+
+  const handleRestore = async () => {
+    try {
+      setLoading(true);
+      const customerInfo = await Purchases.restorePurchases();
+      if (Object.keys(customerInfo.entitlements.active).length > 0) {
+        router.replace('/home');
+      } else {
+        Alert.alert('שגיאה', 'לא נמצא מנוי פעיל.');
+      }
+    } catch {
+      Alert.alert('שגיאה', 'שחזור נכשל, נסה שוב.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePurchase = async () => {
     try {
@@ -35,7 +52,7 @@ export default function Paywall() {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.secondaryBtn}>
+      <TouchableOpacity style={styles.secondaryBtn} onPress={handleRestore} disabled={loading}>
         <Text style={styles.secondaryBtnText}>שחזור רכישות</Text>
       </TouchableOpacity>
     </View>
