@@ -1,6 +1,26 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Purchases from 'react-native-purchases';
 
 export default function Paywall() {
+  const [loading, setLoading] = useState(false);
+
+  const handlePurchase = async () => {
+    try {
+      setLoading(true);
+      const offerings = await Purchases.getOfferings();
+      const pkg = offerings.current?.availablePackages[0];
+      if (!pkg) throw new Error('No package available');
+      await Purchases.purchasePackage(pkg);
+    } catch (e: any) {
+      if (!e.userCancelled) {
+        Alert.alert('שגיאה', 'הרכישה נכשלה, נסה שוב.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>GymStopper Pro</Text>
@@ -9,8 +29,10 @@ export default function Paywall() {
         טיימר מנוחה חכם שיעזור לך להתאמן טוב יותר.
       </Text>
 
-      <TouchableOpacity style={styles.primaryBtn}>
-        <Text style={styles.primaryBtnText}>התחל ניסיון חינם של 7 ימים</Text>
+      <TouchableOpacity style={styles.primaryBtn} onPress={handlePurchase} disabled={loading}>
+        <Text style={styles.primaryBtnText}>
+          {loading ? 'טוען...' : 'התחל ניסיון חינם של 7 ימים'}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.secondaryBtn}>
