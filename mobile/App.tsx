@@ -25,16 +25,42 @@ const DURATIONS = [
 
 function TimerScreen() {
   const [selectedDuration, setSelectedDuration] = useState(90);
-  const { secondsLeft, isRunning, isFinished, start, restart } =
+  const { secondsLeft, isRunning, isFinished, start, restart, cancel } =
     useTimer(selectedDuration);
 
   useEffect(() => {
-    Notifications.requestPermissionsAsync();
+    const setup = async () => {
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('timer-channel', {
+          name: 'Timer Alerts',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          sound: 'default',
+          enableVibrate: true,
+          showBadge: true,
+        });
+      }
+      await Notifications.requestPermissionsAsync({
+        ios: {
+          allowAlert: true,
+          allowBadge: true,
+          allowSound: true,
+          allowCriticalAlerts: false,
+        },
+      });
+    };
+    setup();
   }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Stopper</Text>
+
+      {isRunning && (
+        <TouchableOpacity style={styles.cancelBtn} onPress={cancel}>
+          <Text style={styles.cancelText}>✕</Text>
+        </TouchableOpacity>
+      )}
 
       <CountdownTimer secondsLeft={secondsLeft} isFinished={isFinished} />
 
@@ -188,5 +214,20 @@ const styles = StyleSheet.create({
   durationTextSelected: {
     color: '#fff',
     fontWeight: '600',
+  },
+  cancelBtn: {
+    position: 'absolute',
+    top: 60,
+    right: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#333',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelText: {
+    color: '#aaa',
+    fontSize: 18,
   },
 });
