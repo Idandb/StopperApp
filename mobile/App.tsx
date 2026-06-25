@@ -29,7 +29,27 @@ function TimerScreen() {
     useTimer(selectedDuration);
 
   useEffect(() => {
-    Notifications.requestPermissionsAsync();
+    const setup = async () => {
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('timer-channel', {
+          name: 'Timer Alerts',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          sound: 'default',
+          enableVibrate: true,
+          showBadge: true,
+        });
+      }
+      await Notifications.requestPermissionsAsync({
+        ios: {
+          allowAlert: true,
+          allowBadge: true,
+          allowSound: true,
+          allowCriticalAlerts: false,
+        },
+      });
+    };
+    setup();
   }, []);
 
   return (

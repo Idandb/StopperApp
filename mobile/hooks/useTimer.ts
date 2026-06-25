@@ -26,13 +26,17 @@ export function useTimer(durationSeconds: number) {
 
   const scheduleNotification = async (endTime: number) => {
     await Notifications.cancelAllScheduledNotificationsAsync();
+    const seconds = Math.max(1, Math.round((endTime - Date.now()) / 1000));
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'זמן המנוחה נגמר!',
         body: 'לחץ "התחל מחדש" להתחלת הסט הבא',
         sound: true,
       },
-      trigger: { date: new Date(endTime) },
+      trigger: {
+        seconds,
+        channelId: 'timer-channel',
+      },
     });
   };
 
