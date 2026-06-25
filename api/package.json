@@ -1,0 +1,12 @@
+{
+  "name": "stopperapp-api",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@vercel/node": "^3.0.0",
+    "jose": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
