@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
 Notifications.setNotificationHandler({
@@ -14,6 +15,7 @@ export function useTimer(durationSeconds: number) {
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const endTimeRef = useRef<number | null>(null);
 
   const clearTimer = () => {
     if (intervalRef.current) {
@@ -22,16 +24,37 @@ export function useTimer(durationSeconds: number) {
     }
   };
 
-  const triggerNotification = async () => {
+  const scheduleNotification = async (endTime: number) => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'זמן המנוחה נגמר!',
         body: 'לחץ "התחל מחדש" להתחלת הסט הבא',
         sound: true,
       },
-      trigger: null,
+      trigger: { date: new Date(endTime) },
     });
   };
+
+  // Sync timer when returning from background
+  useEffect(() => {
+    const handleAppStateChange = (nextState: AppStateStatus) => {
+      if (nextState === 'active' && isRunning && endTimeRef.current) {
+        const remaining = Math.round((endTimeRef.current - Date.now()) / 1000);
+        if (remaining <= 0) {
+          clearTimer();
+          setSecondsLeft(0);
+          setIsRunning(false);
+          setIsFinished(true);
+        } else {
+          setSecondsLeft(remaining);
+        }
+      }
+    };
+
+    const sub = AppState.addEventListener('change', handleAppStateChange);
+    return () => sub.remove();
+  }, [isRunning]);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -42,7 +65,6 @@ export function useTimer(durationSeconds: number) {
           clearTimer();
           setIsRunning(false);
           setIsFinished(true);
-          triggerNotification();
           return 0;
         }
         return prev - 1;
@@ -53,17 +75,32 @@ export function useTimer(durationSeconds: number) {
   }, [isRunning]);
 
   const start = useCallback(() => {
+    const endTime = Date.now() + durationSeconds * 1000;
+    endTimeRef.current = endTime;
     setSecondsLeft(durationSeconds);
     setIsFinished(false);
     setIsRunning(true);
+    scheduleNotification(endTime);
   }, [durationSeconds]);
 
   const restart = useCallback(() => {
     clearTimer();
+    const endTime = Date.now() + durationSeconds * 1000;
+    endTimeRef.current = endTime;
     setSecondsLeft(durationSeconds);
     setIsFinished(false);
     setIsRunning(true);
+    scheduleNotification(endTime);
   }, [durationSeconds]);
 
-  return { secondsLeft, isRunning, isFinished, start, restart };
+  const cancel = useCallback(() => {
+    clearTimer();
+    endTimeRef.current = null;
+    setSecondsLeft(durationSeconds);
+    setIsRunning(false);
+    setIsFinished(false);
+    Notifications.cancelAllScheduledNotificationsAsync();
+  }, [durationSeconds]);
+
+  return { secondsLeft, isRunning, isFinished, start, restart, cancel };
 }
