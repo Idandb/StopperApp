@@ -31,6 +31,7 @@ export default function Paywall() {
       );
       if (!pkg) throw new Error('No package available');
       await Purchases.purchasePackage(pkg);
+      router.replace('/home');
     } catch (e: any) {
       if (!e.userCancelled) {
         Alert.alert('שגיאה', 'הרכישה נכשלה, נסה שוב.');
