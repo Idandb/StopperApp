@@ -13,7 +13,8 @@ const SESSION_KEY = 'stopper_user_token';
 async function handleSuccess(uid: string) {
   await SecureStore.setItemAsync(SESSION_KEY, uid);
   await createUser(uid);
-  router.replace('/onboarding');
+  const onboardingDone = await SecureStore.getItemAsync('onboarding_done');
+  router.replace(onboardingDone ? '/' : '/onboarding');
 }
 
 export default function Login() {

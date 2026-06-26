@@ -1,5 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+
+const handleStart = async () => {
+  await SecureStore.setItemAsync('onboarding_done', 'true');
+  router.replace('/home');
+};
 
 export default function Onboarding() {
   return (
@@ -8,7 +14,7 @@ export default function Onboarding() {
       <Text style={styles.description}>
         יש לך 3 ימים של ניסיון חינמי. אחרי זה תוכל לרכוש גישה לתמיד.
       </Text>
-      <TouchableOpacity style={styles.btn} onPress={() => router.replace('/home')}>
+      <TouchableOpacity style={styles.btn} onPress={handleStart}>
         <Text style={styles.btnText}>יאללה נתחיל</Text>
       </TouchableOpacity>
     </View>
