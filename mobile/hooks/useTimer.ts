@@ -26,13 +26,23 @@ export function useTimer(durationSeconds: number) {
   };
 
   const scheduleNotification = async (endTime: number) => {
+    await Notifications.setNotificationCategoryAsync('timer-done', [
+      {
+        identifier: 'cancel',
+        buttonTitle: 'ביטול',
+        options: { opensAppToForeground: true },
+      },
+    ]);
     await Notifications.cancelAllScheduledNotificationsAsync();
     const seconds = Math.max(1, Math.round((endTime - Date.now()) / 1000));
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'זמן המנוחה נגמר!',
-        body: 'לחץ "התחל מחדש" להתחלת הסט הבא',
+        body: 'לחץ להתחלת הסט הבא',
         sound: true,
+        categoryIdentifier: 'timer-done',
+        sticky: true,
+        interruptionLevel: 'timeSensitive',
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,

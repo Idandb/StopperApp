@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
@@ -10,6 +10,7 @@ import { useTimer } from '../hooks/useTimer';
 const SESSION_KEY = 'stopper_user_token';
 
 const DURATIONS = [
+  { label: '0:30', seconds: 30 },
   { label: '1:00', seconds: 60 },
   { label: '1:30', seconds: 90 },
   { label: '2:00', seconds: 120 },
@@ -20,6 +21,16 @@ export default function Home() {
   const [selectedDuration, setSelectedDuration] = useState(90);
   const { secondsLeft, isRunning, isFinished, start, restart, cancel } =
     useTimer(selectedDuration);
+
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener(response => {
+      if (response.actionIdentifier === 'cancel') {
+        cancel();
+        Notifications.dismissAllNotificationsAsync();
+      }
+    });
+    return () => sub.remove();
+  }, [cancel]);
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync(SESSION_KEY);

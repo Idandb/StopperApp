@@ -7,12 +7,16 @@ import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/go
 import { OAuthProvider, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { createUser } from '../utils/createUser';
+import { getDeviceId } from '../utils/deviceId';
+import { loginRevenueCat } from '../utils/revenueCat';
 
 const SESSION_KEY = 'stopper_user_token';
 
 async function handleSuccess(uid: string) {
+  const deviceId = await getDeviceId();
   await SecureStore.setItemAsync(SESSION_KEY, uid);
-  await createUser(uid);
+  await createUser(uid, deviceId);
+  await loginRevenueCat(uid);
   const onboardingDone = await SecureStore.getItemAsync('onboarding_done');
   router.replace(onboardingDone ? '/' : '/onboarding');
 }
