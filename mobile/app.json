@@ -36,7 +36,8 @@
         "ios": {
           "useModularHeaders": true
         }
-      }]
+      }],
+      "./plugins/withModularHeaders"
     ],
     "extra": {
       "eas": {
