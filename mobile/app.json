@@ -11,6 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.gymStopper.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -29,12 +30,14 @@
     },
     "plugins": [
       "expo-apple-authentication",
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.REVERSED_CLIENT_ID"
+      ["@react-native-google-signin/google-signin", {
+        "iosUrlScheme": "com.googleusercontent.apps.590266731924-ltmk8mktp52cn3vs6v4n7vdng51knoot"
+      }],
+      ["expo-build-properties", {
+        "ios": {
+          "useFrameworks": "static"
         }
-      ]
+      }]
     ],
     "extra": {
       "eas": {
