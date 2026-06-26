@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAuth, inMemoryPersistence } from 'firebase/auth';
+import { initializeAuth, getAuth, inMemoryPersistence } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -11,7 +11,13 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-// inMemoryPersistence avoids AsyncStorage dependency; session managed via SecureStore
-export const auth = initializeAuth(app, { persistence: inMemoryPersistence });
+
+let auth;
+try {
+  auth = initializeAuth(app, { persistence: inMemoryPersistence });
+} catch {
+  auth = getAuth(app);
+}
+export { auth };
