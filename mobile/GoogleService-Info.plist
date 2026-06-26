@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>590266731924-ltmk8mktp52cn3vs6v4n7vdng51knoot.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.590266731924-ltmk8mktp52cn3vs6v4n7vdng51knoot</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBy2fOQkjGjhYGy4mVHscSeK0JdYrtGrjg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>590266731924</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.gymStopper.app</string>
+	<key>PROJECT_ID</key>
+	<string>stopperapp-84c0c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>stopperapp-84c0c.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:590266731924:ios:55539d2620f65acdeed381</string>
+</dict>
+</plist>
