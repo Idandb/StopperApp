@@ -4,7 +4,10 @@ import { router } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { getAuth, OAuthProvider, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { createUser } from '../utils/createUser';
+
+const auth = getAuth();
 
 const SESSION_KEY = 'stopper_user_token';
 
@@ -19,13 +22,16 @@ export default function Login() {
 
   const handleApple = async () => {
     try {
-      const credential = await AppleAuthentication.signInAsync({
+      const appleCredential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      await handleSuccess(credential.user);
+      const provider = new OAuthProvider('apple.com');
+      const firebaseCredential = provider.credential({ idToken: appleCredential.identityToken! });
+      const { user } = await signInWithCredential(auth, firebaseCredential);
+      await handleSuccess(user.uid);
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         setError('התחברות עם Apple נכשלה, נסה שוב.');
@@ -37,8 +43,10 @@ export default function Login() {
     try {
       await GoogleSignin.hasPlayServices();
       const { data } = await GoogleSignin.signIn();
-      if (!data?.user?.id) throw new Error('No user id');
-      await handleSuccess(data.user.id);
+      if (!data?.idToken) throw new Error('No idToken');
+      const firebaseCredential = GoogleAuthProvider.credential(data.idToken);
+      const { user } = await signInWithCredential(auth, firebaseCredential);
+      await handleSuccess(user.uid);
     } catch {
       Alert.alert('שגיאה', 'התחברות עם Google נכשלה, נסה שוב.');
     }
