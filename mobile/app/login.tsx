@@ -4,10 +4,9 @@ import { router } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
-import { getAuth, OAuthProvider, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { OAuthProvider, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 import { createUser } from '../utils/createUser';
-
-const auth = getAuth();
 
 const SESSION_KEY = 'stopper_user_token';
 
