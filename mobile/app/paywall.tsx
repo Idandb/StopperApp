@@ -26,9 +26,7 @@ export default function Paywall() {
     try {
       setLoading(true);
       const offerings = await Purchases.getOfferings();
-      const pkg = offerings.current?.availablePackages.find(
-        (p) => p.product.identifier === 'com.gymStopper.app.lifetime'
-      );
+      const pkg = offerings.current?.availablePackages[0];
       if (!pkg) throw new Error('No package available');
       await Purchases.purchasePackage(pkg);
       router.replace('/home');
